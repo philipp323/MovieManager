@@ -32,4 +32,20 @@ public class MovieDAO {
         query.setParameter("Id",id);
         return query.getSingleResult();
     }
+
+    public Movie find(Class<Movie> movieClass, long id)
+    {
+        //movieClass = Movie.class
+        return em.find(movieClass,id);
+    }
+
+    public Movie merge(Movie entity)
+    {
+        return em.merge(entity);
+    }
+
+    public void remove(Movie entity)
+    {
+        em.remove(entity);
+    }
 }

@@ -13,11 +13,11 @@ endif::[]
 
 :source-highlighter: coderay
 
-== Dependencies
+=== Dependencies
 
 * Hinzufügen der nötigen Dependencies für diese Aufgabe im link:\TestUebung_MovieManager\pom.xml[pom.xml]
 
-== Datenbank
+=== Datenbank
 
 * Erstellen/Starten der Postgres Datenbank:
 ....
