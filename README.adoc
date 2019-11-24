@@ -1,0 +1,91 @@
+= Quarkus-Test
+:toc:
+:toc-title: Inhaltsverzeichnis
+:toclevels: 3
+
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+:source-highlighter: coderay
+
+== Dependencies
+
+* Hinzufügen der nötigen Dependencies für diese Aufgabe im link:\TestUebung_MovieManager\pom.xml[pom.xml]
+
+== Datenbank
+
+* Erstellen/Starten der Postgres Datenbank:
+....
+docker run --name supermarket-postgres -p 5432:5432 -e POSTGRES_PASSWORD=passme -d postgres
+....
+
+* Für die Persistierung das link:TestUebung_MovieManager\src\main\resources\META-INF\microprofile-config.properties[Konfigurationsfile] editieren:
+....
+#RestClient Service - Adresse festlegen
+at.htl.MovieManager.business.MovieManagerService/mp-rest/url=https://ghibliapi.herokuapp.com
+# datasource
+quarkus.datasource.url = jdbc:postgresql://192.168.99.100:5432/postgres
+quarkus.datasource.driver = org.postgresql.Driver
+quarkus.datasource.username = postgres
+quarkus.datasource.password = passme
+
+# database configs
+quarkus.hibernate-orm.database.generation = drop-and-create
+....
+Wichtig die Rest-Adresse hier zu definieren!     
+
+=== Rest-Abfragen
+Implementierung der link:TestUebung_MovieManager\src\main\java\at\htl\MovieManager\business\MovieManagerService.java[MovieManagerService.java]   
+....
+@RegisterRestClient
+@ClientHeaderParam(name = "Testparam", value="test")
+public interface MovieManagerService {
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/films")
+    JsonArray getFilms(@QueryParam("count") int count, @QueryParam("offset") int offset);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/people")
+    JsonArray getPeople(@QueryParam("count") int count, @QueryParam("offset") int offset);
+}
+....    
+
+
+=== DAO's
+Implementierung der link:TestUebung_MovieManager\src\main\java\at\htl\MovieManager\business\MovieDAO.java[MovieDAO.java]      
+
+
+
+=== InitBean
+Implementierung der link:TestUebung_MovieManager\src\main\java\at\htl\MovieManager\business\InitBean.java[InitBean.java]      
+
+
+....
+@ApplicationScoped
+public class InitBean {
+
+    @Inject
+    @RestClient
+    MovieManagerService movieManagerService;
+
+    @Inject
+    MovieDAO movieDAO;
+
+    @Inject
+    PersonDAO personDAO;
+
+    @Transactional
+    void init(@Observes StartupEvent ev)
+....
+
+=== Beispiel Entität "Movie": Implementierung der link:TestUebung_MovieManager\src\main\java\at\htl\MovieManager\model\Movie.java[Movie.java]
+
+
+=== Endpoint Implementierung link:TestUebung_MovieManager\src\main\java\at\htl\MovieManager\rest\MovieEndpoint.java[MovieEndpoint.java]     
